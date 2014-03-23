@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Character_Motor : MonoBehaviour {
 
-    static Character_Motor instance;
+    public static Character_Motor Instance;
 
     public Vector3 moveVector;
     float speedLimit;
@@ -14,7 +14,7 @@ public class Character_Motor : MonoBehaviour {
 
     void Awake()
     {
-        Character_Motor.instance = this;
+        Character_Motor.Instance = this;
     }
     
     // Use this for initialization
@@ -30,14 +30,14 @@ public class Character_Motor : MonoBehaviour {
 	    // we don't use this automated update (see ControlledUpdate)
 	}
 
-    void ControlledUpdate()
+    public void ControlledUpdate()
     {
         AlignCharacterToCameraDirection();
         ApplyGravity();
         ProcessMotion();
     }
 
-    void ProcessMotion()
+    public void ProcessMotion()
     {
         moveVector.Normalize();
         moveVector *= speedLimit;
@@ -58,7 +58,7 @@ public class Character_Motor : MonoBehaviour {
         }
     }
 
-    void Jump()
+    public void Jump()
     {
         if (!controller.isGrounded)
             return;
@@ -66,7 +66,7 @@ public class Character_Motor : MonoBehaviour {
         return;
     }
 
-    void ApplyGravity()
+    public void ApplyGravity()
     {
         if (controller.isGrounded)
         {
