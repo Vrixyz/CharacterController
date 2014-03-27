@@ -32,6 +32,19 @@ public class Camera_Manager : MonoBehaviour {
 	
 	}
 
+    void LateUpdate()
+    {
+        VerifyMouseInput();
+    }
+
+    void VerifyMouseInput()
+    {
+        if (Input.getMouseButtonDown())
+        {
+            print("right");
+        }
+    }
+
     public static void InitialCameraCheck()
     {
         Camera mainCamera = Camera.main;
