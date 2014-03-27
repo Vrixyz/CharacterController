@@ -68,11 +68,7 @@ public class Character_Manager : MonoBehaviour {
 
 	void ActionInput()
 	{
-//<<<<<<< HEAD
 		if (Input.GetButtonDown("Jump"))
-//=======
-//        if (Input.GetButton("Jump"))
-//>>>>>>> 8ce8792d9b67235787e2aa31b6c8e97385d0f6e5
 			DelegateJump();
 	}
 }

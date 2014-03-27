@@ -49,7 +49,7 @@ public class Character_Motor : MonoBehaviour {
     {
         if (moveVector.x != 0 || moveVector.y != 0 || moveVector.z != 0)
         {
-            Camera camera = Camera.main;
+            Camera camera = GameObject.Find("CharacterCamera").camera;
             controller.gameObject.transform.rotation = camera.transform.rotation;
             controller.gameObject.transform.rotation.SetLookRotation(moveVector, new Vector3(0,1,0));
             
