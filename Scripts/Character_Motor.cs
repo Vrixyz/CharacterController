@@ -12,6 +12,7 @@ public class Character_Motor : MonoBehaviour {
     public float gravityStrength = 5;
 
     CharacterController controller;
+    public Vector3 slideVector;
 
     void Awake()
     {
@@ -40,11 +41,11 @@ public class Character_Motor : MonoBehaviour {
         moveVector *= speedLimit;
         moveVector *= Time.deltaTime;
         moveVector.y = VerticalVelocity;
-        // TOCHECK: move the character !
-        // TOCHECK: transform to world point ?
+        Slide();
         controller.Move(this.gameObject.transform.TransformDirection(moveVector.x, moveVector.y, moveVector.z));
         ApplyGravity();
     }
+
     void AlignCharacterToCameraDirection()
     {
         if (moveVector.x != 0 || moveVector.y != 0 || moveVector.z != 0)
@@ -76,4 +77,27 @@ public class Character_Motor : MonoBehaviour {
         moveVector.y -= gravityStrength * Time.deltaTime;
     }
 
+    public void Slide()
+    {
+        slideVector = Vector3.zero;
+        if (!controller.isGrounded)
+        {
+            return;
+        }
+        Vector3 raycastPosition = new Vector3(controller.transform.position.x,
+            controller.transform.position.y + 1,
+            controller.transform.position.z);
+
+        RaycastHit hitInfo = new RaycastHit();
+        if (Physics.Raycast(raycastPosition, Vector3.down, out hitInfo, 2))
+        {
+            print(hitInfo.normal);
+            if (hitInfo.normal.y < 0.99F)
+            {
+                slideVector = hitInfo.normal;
+                slideVector.y = -1 + slideVector.y;
+                moveVector += slideVector * Time.deltaTime;
+            }
+        }
+    }
 }
