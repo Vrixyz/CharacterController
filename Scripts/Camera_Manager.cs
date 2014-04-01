@@ -10,10 +10,15 @@ public class Camera_Manager : MonoBehaviour {
     private Vector2 MouseZero = Vector2.zero;
     public float zoomDistance = 10f;
     public float boundUp = 0.7f;
-    public float boundDown = 0.4f;
+    public float boundDown = 45f;
 
     private Vector3 _newPosition;
     private Vector3 _newRotation;
+
+    private float xVel = 0F;
+    private float yVel = 0F;
+    private float zoomVel = 0F;
+    private float smoothTime = 0.0001F;
 
     void Awake()
     {
@@ -22,8 +27,6 @@ public class Camera_Manager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        // TODO Find camera new position with clamping
-
         _newPosition = Vector3.zero;
         _newRotation = Vector3.zero;
         DefaultCameraPosition = gameObject.transform.position;
@@ -33,6 +36,13 @@ public class Camera_Manager : MonoBehaviour {
     void InitialCameraPosition()
     {
         gameObject.transform.position = DefaultCameraPosition;
+    }
+
+    void InitialCameraParameters()
+    {
+        _newPosition = Vector3.zero;
+        _newRotation = Vector3.zero;
+        InitialCameraPosition();
     }
 
 	// Update is called once per frame
@@ -47,73 +57,67 @@ public class Camera_Manager : MonoBehaviour {
 
     void VerifyMouseInput()
     {
-        
         if (Input.GetButton("Fire2"))
         {
             SmoothCameraPosition();
-            print("Down" +( -zoomDistance * boundDown) + " Up : " + (zoomDistance * boundUp));
-            Camera.main.transform.localPosition = new Vector3(Camera.main.transform.localPosition.x,
-                                                              Mathf.Clamp(Camera.main.transform.localPosition.y, -zoomDistance * boundDown, zoomDistance * boundUp),
-                                                              Camera.main.transform.localPosition.z);
-            Camera.main.transform.position = (transform.position - TargetLookAtTransform.transform.position).normalized * zoomDistance + TargetLookAtTransform.transform.position;
-            
-            Camera.main.transform.LookAt(TargetLookAtTransform);
+            ApplyCameraPosition();
         }
 
         if (Input.GetAxis("Mouse ScrollWheel") != 0f)
         {
-            zoomDistance -= Input.GetAxis("Mouse ScrollWheel");
-            zoomDistance = Mathf.Clamp(zoomDistance, 3, 15);
-            Camera.main.transform.position = (transform.position - TargetLookAtTransform.transform.position).normalized * zoomDistance + TargetLookAtTransform.transform.position;
+            SmoothCameraAxis();
+            ApplyCameraPosition();
         }
     }
-
-    private float xVel = 0F;
-    private float yVel = 0F;
-    private float smoothTime = 0.1F;
+    
     public void SmoothCameraPosition()
     {
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
 
-        float   x = Mathf.SmoothDamp(Camera.main.transform.position.x, Camera.main.transform.position.x - mouseX,
+        float x = Mathf.SmoothDamp(0, mouseX,
             ref xVel, smoothTime);
-        float y = Mathf.SmoothDamp(Camera.main.transform.position.y, Camera.main.transform.position.y - mouseY,
+        float y = Mathf.SmoothDamp(0, mouseY,
             ref yVel, smoothTime);
+        oldmouseX += x;
+        oldmouseY += y;
 
-        _newPosition = CreatePositionVector(mouseX, mouseY,  zoomDistance);
+        VerifyUserMouseInput();
+        _newPosition = new Vector3(oldmouseX, oldmouseY, zoomDistance);
+        _newPosition = CreatePositionVector(oldmouseX, oldmouseY, _newPosition);
     }
+    
+    float oldmouseX = 180;
+    float oldmouseY = -45;
 
-    public Vector3 CreatePositionVector(float mouseX, float mouseY, float distance)
+    public Vector3 CreatePositionVector(float mouseX, float mouseY, Vector3 position)
     {
-        Vector3     positionVec = new Vector3(0, 0, distance);
-        Quaternion rotation = Quaternion.Euler(mouseX, mouseY, 0);
+        Vector3 positionVec = new Vector3(0, 0, position.z);
+        Quaternion rotation = Quaternion.Euler(mouseY, mouseX, 0);
 
-        return (Camera.main.gameObject.transform.parent.transform.position + rotation * positionVec);
+        return (TargetLookAtTransform.transform.position + (rotation * positionVec));
     }
 
     public void SmoothCameraAxis()
     {
-        float mouseX = Input.GetAxis("Mouse X");
-        float mouseY = Input.GetAxis("Mouse Y");
+        float zoom = Input.GetAxis("Mouse ScrollWheel");
 
-        float x = Mathf.SmoothDamp(Camera.main.transform.rotation.x, Camera.main.transform.rotation.x - mouseX,
-            ref xVel, smoothTime);
-        float y = Mathf.SmoothDamp(Camera.main.transform.rotation.y, Camera.main.transform.rotation.y - mouseY,
-            ref yVel, smoothTime);
-
-        _newRotation = new Vector3(x, y, 0);
+        zoomDistance = Mathf.SmoothDamp(zoomDistance, zoomDistance - zoom,
+            ref zoomVel, smoothTime);
+        zoomDistance = Helper.CameraClamp(zoomDistance, 7, 15);
+        _newPosition = new Vector3(oldmouseX, oldmouseY, zoomDistance);
+        _newPosition = CreatePositionVector(oldmouseX, oldmouseY, _newPosition);
     }
 
     public void ApplyCameraPosition()
     {
         Camera.main.transform.position = _newPosition;
-        Camera.main.transform.rotation = Quaternion.Euler(_newRotation);
         Camera.main.transform.LookAt(TargetLookAtTransform);
     }
 
     public void VerifyUserMouseInput()
     {
+        oldmouseY = Helper.CameraClamp(oldmouseY, -boundDown, boundUp);
     }
 
     public static void InitialCameraCheck()
@@ -134,7 +138,6 @@ public class Camera_Manager : MonoBehaviour {
             GameObject gameObject = new GameObject();
             gameObject.AddComponent<Camera>();
             mainCamera = gameObject.GetComponent<Camera>();
-            print(mainCamera);
             mainCamera.name = "Main Camera";
             mainCamera.tag = "MainCamera";
             mainCamera.transform.parent = Character_Manager.Instance.gameObject.transform;
