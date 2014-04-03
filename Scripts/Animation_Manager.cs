@@ -2,6 +2,12 @@
 using System.Collections;
 
 public class Animation_Manager : MonoBehaviour {
+    public static Animation_Manager Instance;
+
+    public void Awake()
+    {
+        Instance = this;
+    }
 
     public enum MotionStateList
     {
