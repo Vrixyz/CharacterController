@@ -29,13 +29,13 @@ public class Camera_Manager : MonoBehaviour {
 	void Start () {
         _newPosition = Vector3.zero;
         _newRotation = Vector3.zero;
-        DefaultCameraPosition = gameObject.transform.position;
+        DefaultCameraPosition = gameObject.transform.localPosition;
         InitialCameraPosition();
 	}
 
-    void InitialCameraPosition()
+    public void InitialCameraPosition()
     {
-        gameObject.transform.position = DefaultCameraPosition;
+        gameObject.transform.localPosition = DefaultCameraPosition;
     }
 
     void InitialCameraParameters()
@@ -70,6 +70,13 @@ public class Camera_Manager : MonoBehaviour {
         }
     }
     
+    public void UpdatePosition()
+    {
+        VerifyUserMouseInput();
+        _newPosition = new Vector3(oldmouseX, oldmouseY, zoomDistance);
+        _newPosition = CreatePositionVector(oldmouseX, oldmouseY, _newPosition);
+    }
+
     public void SmoothCameraPosition()
     {
         float mouseX = Input.GetAxis("Mouse X");
@@ -82,13 +89,12 @@ public class Camera_Manager : MonoBehaviour {
         oldmouseX += x;
         oldmouseY += y;
 
-        VerifyUserMouseInput();
-        _newPosition = new Vector3(oldmouseX, oldmouseY, zoomDistance);
-        _newPosition = CreatePositionVector(oldmouseX, oldmouseY, _newPosition);
+     
+        UpdatePosition();
     }
     
-    float oldmouseX = 180;
-    float oldmouseY = -45;
+    public float oldmouseX = 180;
+    public float oldmouseY = -45;
 
     public Vector3 CreatePositionVector(float mouseX, float mouseY, Vector3 position)
     {

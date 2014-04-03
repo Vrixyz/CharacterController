@@ -7,9 +7,14 @@ public class Character_Motor : MonoBehaviour {
 
     public Vector3 moveVector;
     public float VerticalVelocity;
-    public float speedLimit = 20;
     public float jumpStrength = 20;
     public float gravityStrength = 5;
+
+    public float speedLimitFalling = 20F;
+    public float speedLimitForward = 20F;
+    public float speedLimitBackward = 20F;
+    public float speedLimitSliding = 20F;
+    public float speedLimitSideway = 20F;
 
     CharacterController controller;
     public Vector3 slideVector;
@@ -22,7 +27,7 @@ public class Character_Motor : MonoBehaviour {
     // Use this for initialization
 	void Start () {
         controller = this.gameObject.GetComponent<CharacterController>();
-	}
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -31,30 +36,62 @@ public class Character_Motor : MonoBehaviour {
 
     public void ControlledUpdate()
     {
-       // AlignCharacterToCameraDirection();
         ProcessMotion();
+    }
+
+    public float SpeedLimit()
+    {
+        switch (gameObject.GetComponent<Animation_Manager>().characterMotionState) {
+            case Animation_Manager.MotionStateList.Forward:
+            case Animation_Manager.MotionStateList.LeftForward :
+            case Animation_Manager.MotionStateList.RightForward:
+                {
+                    return speedLimitForward;
+                }
+            case Animation_Manager.MotionStateList.Backward:
+            case Animation_Manager.MotionStateList.LeftBackward:
+            case Animation_Manager.MotionStateList.RightBackward:
+                {
+                    return speedLimitBackward;
+                }
+            case Animation_Manager.MotionStateList.Left:
+            case Animation_Manager.MotionStateList.Right:
+                {
+                    return speedLimitSideway;
+                }
+        }
+        if (!controller.isGrounded)
+            return speedLimitFalling;
+        if (slideVector.magnitude > 0)
+            return speedLimitSliding;
+        return 0F;
     }
 
     public void ProcessMotion()
     {
         moveVector.Normalize();
-        moveVector *= speedLimit;
+        moveVector *= SpeedLimit();
         moveVector *= Time.deltaTime;
         moveVector.y = VerticalVelocity;
+        AlignCharacterToCameraDirection();
+        moveVector = this.gameObject.transform.TransformDirection(moveVector.x, moveVector.y, moveVector.z);
         Slide();
-        controller.Move(this.gameObject.transform.TransformDirection(moveVector.x, moveVector.y, moveVector.z));
+        controller.Move(moveVector);
         ApplyGravity();
     }
 
     void AlignCharacterToCameraDirection()
     {
-        if (moveVector.x != 0 || moveVector.y != 0 || moveVector.z != 0)
+        if (moveVector.x != 0 || moveVector.z != 0)
         {
-            Camera camera = GameObject.Find("CharacterCamera").camera;
-            controller.gameObject.transform.rotation = camera.transform.rotation;
-            controller.gameObject.transform.rotation.SetLookRotation(moveVector, new Vector3(0,1,0));
-            
-            // TOCHECK: we're moving, so move the character so it fits the camera angle
+            Camera_Manager camera = Camera.main.gameObject.GetComponent<Camera_Manager>();
+            Quaternion rotation = Camera.main.transform.rotation;
+            rotation.x = 0;
+            rotation.z = 0;
+            controller.gameObject.transform.rotation = rotation;
+            controller.gameObject.transform.rotation.SetLookRotation(moveVector, new Vector3(0, 1, 0));
+            camera.UpdatePosition();
+            camera.ApplyCameraPosition();
         }
     }
 
@@ -91,12 +128,19 @@ public class Character_Motor : MonoBehaviour {
         RaycastHit hitInfo = new RaycastHit();
         if (Physics.Raycast(raycastPosition, Vector3.down, out hitInfo, 2))
         {
-            print(hitInfo.normal);
             if (hitInfo.normal.y < 0.99F)
             {
                 slideVector = hitInfo.normal;
-                slideVector.y = -1 + slideVector.y;
-                moveVector += slideVector * Time.deltaTime;
+                slideVector.y = -slideVector.y;
+                slideVector *= SpeedLimit();
+                if (hitInfo.normal.y < 0.7F)
+                {
+                    moveVector = slideVector * Time.deltaTime;
+                }
+                else
+                {
+                    moveVector += slideVector * Time.deltaTime;
+                }
             }
         }
     }

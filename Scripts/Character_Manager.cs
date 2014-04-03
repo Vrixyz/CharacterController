@@ -39,7 +39,8 @@ public class Character_Manager : MonoBehaviour {
 		{
 			Character_Motor.Instance.moveVector += new Vector3(0, 0, vertical);
 		}
-        Character_Motor.Instance.VerticalVelocity = Character_Motor.Instance.moveVector.y; 
+        Character_Motor.Instance.VerticalVelocity = Character_Motor.Instance.moveVector.y;
+        gameObject.GetComponent<Animation_Manager>().CurrentMotionState();
 	}
 
 	void DelegateJump()
