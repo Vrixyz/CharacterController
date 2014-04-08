@@ -60,6 +60,7 @@ public class Camera_Manager : MonoBehaviour {
         if (Input.GetButton("Fire2"))
         {
             SmoothCameraPosition();
+            //CameraCollisionPointsCheck(TargetLookAtTransform.position, _newPosition);
             ApplyCameraPosition();
         }
 
@@ -68,6 +69,7 @@ public class Camera_Manager : MonoBehaviour {
             SmoothCameraAxis();
             ApplyCameraPosition();
         }
+        CameraCollisionPointsCheck(TargetLookAtTransform.position, _newPosition);
     }
     
     public void UpdatePosition()
@@ -154,5 +156,26 @@ public class Camera_Manager : MonoBehaviour {
             mainCamera.gameObject.AddComponent<Camera_Manager>();
         }
         mainCamera.gameObject.GetComponent<Camera_Manager>().TargetLookAtTransform = targetLookAt.transform;
+    }
+
+    public void CameraCollisionPointsCheck(Vector3 targetLookAt, Vector3 cameraPos)
+    {
+        Helper.ClipPlaneStruct cpp = Helper.FindNearClipPlanePositions();
+
+        Vector3 backBuffer = Vector3.zero;
+        backBuffer.z -= Camera.main.nearClipPlane;
+        backBuffer = transform.TransformPoint(backBuffer);
+
+        Debug.DrawLine(backBuffer, targetLookAt, Color.red);
+
+        Debug.DrawLine(cpp.UpperLeft, cpp.UpperRight, Color.white);
+        Debug.DrawLine(cpp.UpperRight, cpp.LowerRight, Color.white);
+        Debug.DrawLine(cpp.LowerLeft, cpp.LowerRight, Color.white);
+        Debug.DrawLine(cpp.LowerLeft, cpp.UpperLeft, Color.white);
+        
+        Debug.DrawLine(cpp.UpperLeft, targetLookAt, Color.white);
+        Debug.DrawLine(cpp.UpperRight, targetLookAt, Color.white);
+        Debug.DrawLine(cpp.LowerLeft, targetLookAt, Color.white);
+        Debug.DrawLine(cpp.LowerRight, targetLookAt, Color.white);
     }
 }
