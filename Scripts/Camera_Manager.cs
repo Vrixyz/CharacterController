@@ -2,15 +2,18 @@
 using System.Collections;
 
 public class Camera_Manager : MonoBehaviour {
-    public static Camera_Manager Instance;
-    private Transform TargetLookAtTransform = null;
-    public Vector2 YLimit = new Vector2(-70, 70);
-    public Vector2 ZoomLimit = new Vector2(42, 200);
-    private Vector3 DefaultCameraPosition = Vector3.zero;
-    private Vector2 MouseZero = Vector2.zero;
-    public float zoomDistance = 10f;
-    public float boundUp = 0.7f;
-    public float boundDown = 45f;
+    public static Camera_Manager    Instance;
+    private Transform               TargetLookAtTransform = null;
+    public Vector2                  YLimit = new Vector2(-70, 70);
+    public Vector2                  ZoomLimit = new Vector2(3, 15);
+    private Vector3                 DefaultCameraPosition = Vector3.zero;
+    private Vector2                 MouseZero = Vector2.zero;
+    public float                    zoomDistance = 10f;
+    private float                   currentCameraDistance;
+    public float                    boundUp = 0.7f;
+    public float                    boundDown = 45f;
+
+
 
     private Vector3 _newPosition;
     private Vector3 _newRotation;
@@ -29,6 +32,7 @@ public class Camera_Manager : MonoBehaviour {
 	void Start () {
         _newPosition = Vector3.zero;
         _newRotation = Vector3.zero;
+        currentCameraDistance = zoomDistance;
         DefaultCameraPosition = gameObject.transform.localPosition;
         InitialCameraPosition();
 	}
@@ -53,10 +57,21 @@ public class Camera_Manager : MonoBehaviour {
     void LateUpdate()
     {
         VerifyMouseInput();
+
+        int obstructedCameraCount = 0;
+        bool obstructed = false;
+
+        do {
+            obstructed = ObstructedCameraChecked(obstructedCameraCount);
+            if (obstructedCameraCount == 0 && !obstructed)
+                currentCameraDistance = zoomDistance;
+            obstructedCameraCount++;
+        } while (obstructed);
     }
 
     void VerifyMouseInput()
     {
+        CameraCollisionPointsCheck(TargetLookAtTransform.position, _newPosition);
         if (Input.GetButton("Fire2"))
         {
             SmoothCameraPosition();
@@ -69,7 +84,6 @@ public class Camera_Manager : MonoBehaviour {
             SmoothCameraAxis();
             ApplyCameraPosition();
         }
-        CameraCollisionPointsCheck(TargetLookAtTransform.position, _newPosition);
     }
     
     public void UpdatePosition()
@@ -106,14 +120,18 @@ public class Camera_Manager : MonoBehaviour {
         return (TargetLookAtTransform.transform.position + (rotation * positionVec));
     }
 
-    public void SmoothCameraAxis()
+    public void SmoothCameraAxis(bool ignoreLimit = false)
     {
         float zoom = Input.GetAxis("Mouse ScrollWheel");
 
-        zoomDistance = Mathf.SmoothDamp(zoomDistance, zoomDistance - zoom,
+        currentCameraDistance = Mathf.SmoothDamp(currentCameraDistance, currentCameraDistance - zoom,
             ref zoomVel, smoothTime);
-        zoomDistance = Helper.CameraClamp(zoomDistance, 7, 15);
-        _newPosition = new Vector3(oldmouseX, oldmouseY, zoomDistance);
+        if (!ignoreLimit)
+        {
+            currentCameraDistance = Helper.CameraClamp(currentCameraDistance, ZoomLimit.x, ZoomLimit.y);
+            zoomDistance = currentCameraDistance;
+        }
+        _newPosition = new Vector3(oldmouseX, oldmouseY, currentCameraDistance);
         _newPosition = CreatePositionVector(oldmouseX, oldmouseY, _newPosition);
     }
 
@@ -158,8 +176,10 @@ public class Camera_Manager : MonoBehaviour {
         mainCamera.gameObject.GetComponent<Camera_Manager>().TargetLookAtTransform = targetLookAt.transform;
     }
 
-    public void CameraCollisionPointsCheck(Vector3 targetLookAt, Vector3 cameraPos)
+    public float CameraCollisionPointsCheck(Vector3 targetLookAt, Vector3 cameraPos)
     {
+        // Debug Lines
+
         Helper.ClipPlaneStruct cpp = Helper.FindNearClipPlanePositions();
 
         Vector3 backBuffer = Vector3.zero;
@@ -177,5 +197,60 @@ public class Camera_Manager : MonoBehaviour {
         Debug.DrawLine(cpp.UpperRight, targetLookAt, Color.white);
         Debug.DrawLine(cpp.LowerLeft, targetLookAt, Color.white);
         Debug.DrawLine(cpp.LowerRight, targetLookAt, Color.white);
+
+
+        // Actual Code
+        float      closestDistanceToCharacter = -1F;
+        RaycastHit hitInfo;
+
+        if (Physics.Linecast(targetLookAt, backBuffer, out hitInfo, ~LayerMask.NameToLayer("Player")))
+        {
+            closestDistanceToCharacter = hitInfo.distance;
+        }
+        if (Physics.Linecast(targetLookAt, cpp.UpperRight, out hitInfo, ~LayerMask.NameToLayer("Player")))
+        {
+            if (closestDistanceToCharacter == -1F || hitInfo.distance < closestDistanceToCharacter)
+                closestDistanceToCharacter = hitInfo.distance;
+        }
+        if (Physics.Linecast(targetLookAt, cpp.UpperLeft, out hitInfo, ~LayerMask.NameToLayer("Player")))
+        {
+            if (closestDistanceToCharacter == -1F ||  hitInfo.distance < closestDistanceToCharacter)
+                closestDistanceToCharacter = hitInfo.distance;
+        }
+        if (Physics.Linecast(targetLookAt, cpp.LowerLeft, out hitInfo, ~LayerMask.NameToLayer("Player")))
+        {
+            if (closestDistanceToCharacter == -1F ||  hitInfo.distance < closestDistanceToCharacter)
+                closestDistanceToCharacter = hitInfo.distance;
+        }
+        if (Physics.Linecast(targetLookAt, cpp.LowerRight, out hitInfo, ~LayerMask.NameToLayer("Player")))
+        {
+            if (closestDistanceToCharacter == -1F ||  hitInfo.distance < closestDistanceToCharacter)
+                closestDistanceToCharacter = hitInfo.distance;
+        }
+        return (closestDistanceToCharacter);
+    }
+
+    public bool ObstructedCameraChecked(int obstructedCheckCount)
+    {
+        bool    cameraObstructionBool = false;
+        float   closestDistanceToCharacter = CameraCollisionPointsCheck(TargetLookAtTransform.position, _newPosition);
+
+        if (closestDistanceToCharacter != -1F)
+        {
+            cameraObstructionBool = true;
+            if (obstructedCheckCount < 10)
+            {
+                currentCameraDistance -= 0.1F;
+            }
+            else
+            {
+                currentCameraDistance = closestDistanceToCharacter;
+                cameraObstructionBool = false;
+            }
+            SmoothCameraAxis(true);
+            ApplyCameraPosition();
+        }
+
+        return (cameraObstructionBool);
     }
 }
