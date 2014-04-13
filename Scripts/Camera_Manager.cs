@@ -5,7 +5,7 @@ public class Camera_Manager : MonoBehaviour {
     public static Camera_Manager    Instance;
     private Transform               TargetLookAtTransform = null;
     public Vector2                  YLimit = new Vector2(-70, 70);
-    public Vector2                  ZoomLimit = new Vector2(3, 15);
+    public Vector2                  ZoomLimit = new Vector2(7, 15);
     private Vector3                 DefaultCameraPosition = Vector3.zero;
     private Vector2                 MouseZero = Vector2.zero;
     public float                    zoomDistance = 10f;
@@ -63,8 +63,8 @@ public class Camera_Manager : MonoBehaviour {
 
         do {
             obstructed = ObstructedCameraChecked(obstructedCameraCount);
-            if (obstructedCameraCount == 0 && !obstructed)
-                currentCameraDistance = zoomDistance;
+            //if (obstructedCameraCount == 0 && !obstructed)
+              //  currentCameraDistance = zoomDistance;
             obstructedCameraCount++;
         } while (obstructed);
     }
@@ -124,14 +124,14 @@ public class Camera_Manager : MonoBehaviour {
     {
         float zoom = Input.GetAxis("Mouse ScrollWheel");
 
-        currentCameraDistance = Mathf.SmoothDamp(currentCameraDistance, currentCameraDistance - zoom,
+        zoomDistance = Mathf.SmoothDamp(zoomDistance, zoomDistance - zoom,
             ref zoomVel, smoothTime);
         if (!ignoreLimit)
         {
-            currentCameraDistance = Helper.CameraClamp(currentCameraDistance, ZoomLimit.x, ZoomLimit.y);
-            zoomDistance = currentCameraDistance;
+            zoomDistance = Helper.CameraClamp(zoomDistance, ZoomLimit.x, ZoomLimit.y);
+           // zoomDistance = currentCameraDistance;
         }
-        _newPosition = new Vector3(oldmouseX, oldmouseY, currentCameraDistance);
+        _newPosition = new Vector3(oldmouseX, oldmouseY, zoomDistance);
         _newPosition = CreatePositionVector(oldmouseX, oldmouseY, _newPosition);
     }
 
@@ -240,17 +240,19 @@ public class Camera_Manager : MonoBehaviour {
             cameraObstructionBool = true;
             if (obstructedCheckCount < 10)
             {
-                currentCameraDistance -= 0.1F;
+                if (zoomDistance - 0.1F > closestDistanceToCharacter - Camera.main.nearClipPlane)
+                    zoomDistance -= 0.1F;
             }
             else
             {
-                currentCameraDistance = closestDistanceToCharacter;
+                zoomDistance = closestDistanceToCharacter - Camera.main.nearClipPlane;
                 cameraObstructionBool = false;
             }
             SmoothCameraAxis(true);
             ApplyCameraPosition();
         }
-
+        if (!cameraObstructionBool)
+            SmoothCameraAxis();
         return (cameraObstructionBool);
     }
 }
