@@ -61,8 +61,13 @@ public class Camera_Manager : MonoBehaviour {
         float currentZoomDistance = zoomDistance;
 
         zoomDistance = userZoomDistance;
-        if (ObstructedCameraChecked(1))
+        SmoothCameraAxis();
+        if (ObstructedCameraChecked(0))
+        {
             zoomDistance = currentZoomDistance;
+            SmoothCameraAxis();
+            ApplyCameraPosition();
+        }
         else if (currentZoomDistance < userZoomDistance)
         {
             zoomDistance = currentZoomDistance + unobstructedSmoothTime;
@@ -242,10 +247,10 @@ public class Camera_Manager : MonoBehaviour {
         if (closestDistanceToCharacter != -1F)
         {
             cameraObstructionBool = true;
-            if (obstructedCheckCount < 10)
+            if (obstructedCheckCount < 2)
             {
-                if (zoomDistance - obstructedSmoothTime > closestDistanceToCharacter - Camera.main.nearClipPlane)
-                    zoomDistance -= obstructedSmoothTime;
+                //if (zoomDistance - obstructedSmoothTime > closestDistanceToCharacter - Camera.main.nearClipPlane)
+                zoomDistance -= obstructedSmoothTime;
             }
             else
             {
