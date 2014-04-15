@@ -9,14 +9,14 @@ public class Camera_Manager : MonoBehaviour {
     private Vector3                 DefaultCameraPosition = Vector3.zero;
     private Vector2                 MouseZero = Vector2.zero;
     public float                    zoomDistance = 10f;
-    private float                   currentCameraDistance;
+    private float                   userZoomDistance;
     public float                    boundUp = 0.7f;
     public float                    boundDown = 45f;
 
-
-
     private Vector3 _newPosition;
-    private Vector3 _newRotation;
+
+    public float unobstructedSmoothTime = 0.2F;
+    public float obstructedSmoothTime = 0.1F;
 
     private float xVel = 0F;
     private float yVel = 0F;
@@ -31,8 +31,7 @@ public class Camera_Manager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         _newPosition = Vector3.zero;
-        _newRotation = Vector3.zero;
-        currentCameraDistance = zoomDistance;
+        userZoomDistance = zoomDistance;
         DefaultCameraPosition = gameObject.transform.localPosition;
         InitialCameraPosition();
 	}
@@ -45,7 +44,6 @@ public class Camera_Manager : MonoBehaviour {
     void InitialCameraParameters()
     {
         _newPosition = Vector3.zero;
-        _newRotation = Vector3.zero;
         InitialCameraPosition();
     }
 
@@ -60,11 +58,18 @@ public class Camera_Manager : MonoBehaviour {
 
         int obstructedCameraCount = 0;
         bool obstructed = false;
+        float currentZoomDistance = zoomDistance;
 
+        zoomDistance = userZoomDistance;
+        if (ObstructedCameraChecked(1))
+            zoomDistance = currentZoomDistance;
+        else if (currentZoomDistance < userZoomDistance)
+        {
+            zoomDistance = currentZoomDistance + unobstructedSmoothTime;
+            SmoothCameraAxis(true);
+        }
         do {
             obstructed = ObstructedCameraChecked(obstructedCameraCount);
-            //if (obstructedCameraCount == 0 && !obstructed)
-              //  currentCameraDistance = zoomDistance;
             obstructedCameraCount++;
         } while (obstructed);
     }
@@ -75,7 +80,6 @@ public class Camera_Manager : MonoBehaviour {
         if (Input.GetButton("Fire2"))
         {
             SmoothCameraPosition();
-            //CameraCollisionPointsCheck(TargetLookAtTransform.position, _newPosition);
             ApplyCameraPosition();
         }
 
@@ -83,6 +87,7 @@ public class Camera_Manager : MonoBehaviour {
         {
             SmoothCameraAxis();
             ApplyCameraPosition();
+            userZoomDistance = zoomDistance;
         }
     }
     
@@ -129,7 +134,6 @@ public class Camera_Manager : MonoBehaviour {
         if (!ignoreLimit)
         {
             zoomDistance = Helper.CameraClamp(zoomDistance, ZoomLimit.x, ZoomLimit.y);
-           // zoomDistance = currentCameraDistance;
         }
         _newPosition = new Vector3(oldmouseX, oldmouseY, zoomDistance);
         _newPosition = CreatePositionVector(oldmouseX, oldmouseY, _newPosition);
@@ -240,19 +244,16 @@ public class Camera_Manager : MonoBehaviour {
             cameraObstructionBool = true;
             if (obstructedCheckCount < 10)
             {
-                if (zoomDistance - 0.1F > closestDistanceToCharacter - Camera.main.nearClipPlane)
-                    zoomDistance -= 0.1F;
+                if (zoomDistance - obstructedSmoothTime > closestDistanceToCharacter - Camera.main.nearClipPlane)
+                    zoomDistance -= obstructedSmoothTime;
             }
             else
             {
-                zoomDistance = closestDistanceToCharacter - Camera.main.nearClipPlane;
                 cameraObstructionBool = false;
             }
             SmoothCameraAxis(true);
             ApplyCameraPosition();
         }
-        if (!cameraObstructionBool)
-            SmoothCameraAxis();
         return (cameraObstructionBool);
     }
 }
