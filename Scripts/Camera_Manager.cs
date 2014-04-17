@@ -12,6 +12,7 @@ public class Camera_Manager : MonoBehaviour {
     private float                   userZoomDistance;
     public float                    boundUp = 0.7f;
     public float                    boundDown = 45f;
+    public float                    mouseSensitivity = 1F;
 
     private Vector3 _newPosition;
 
@@ -62,16 +63,18 @@ public class Camera_Manager : MonoBehaviour {
 
         zoomDistance = userZoomDistance;
         SmoothCameraAxis();
+        ApplyCameraPosition();
         if (ObstructedCameraChecked(0))
         {
             zoomDistance = currentZoomDistance;
-            SmoothCameraAxis();
+            SmoothCameraAxis(true);
             ApplyCameraPosition();
         }
         else if (currentZoomDistance < userZoomDistance)
         {
             zoomDistance = currentZoomDistance + unobstructedSmoothTime;
             SmoothCameraAxis(true);
+            ApplyCameraPosition();
         }
         do {
             obstructed = ObstructedCameraChecked(obstructedCameraCount);
@@ -90,7 +93,7 @@ public class Camera_Manager : MonoBehaviour {
 
         if (Input.GetAxis("Mouse ScrollWheel") != 0f)
         {
-            SmoothCameraAxis();
+            SmoothCameraAxis(userZoomDistance != zoomDistance);
             ApplyCameraPosition();
             userZoomDistance = zoomDistance;
         }
@@ -108,9 +111,9 @@ public class Camera_Manager : MonoBehaviour {
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
 
-        float x = Mathf.SmoothDamp(0, mouseX,
+        float x = Mathf.SmoothDamp(0, mouseX * mouseSensitivity,
             ref xVel, smoothTime);
-        float y = Mathf.SmoothDamp(0, mouseY,
+        float y = Mathf.SmoothDamp(0, mouseY * mouseSensitivity,
             ref yVel, smoothTime);
         oldmouseX += x;
         oldmouseY += y;
