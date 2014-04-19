@@ -19,6 +19,7 @@ public class Camera_Manager : MonoBehaviour {
     public float unobstructedSmoothTime = 0.2F;
     public float obstructedSmoothTime = 0.1F;
 
+	private bool  isObstructed = false;
     private float xVel = 0F;
     private float yVel = 0F;
     private float zoomVel = 0F;
@@ -58,7 +59,7 @@ public class Camera_Manager : MonoBehaviour {
         VerifyMouseInput();
 
         int obstructedCameraCount = 0;
-        bool obstructed = false;
+		bool obstructed = false;
         float currentZoomDistance = zoomDistance;
 
         zoomDistance = userZoomDistance;
@@ -79,7 +80,7 @@ public class Camera_Manager : MonoBehaviour {
         do {
             obstructed = ObstructedCameraChecked(obstructedCameraCount);
             obstructedCameraCount++;
-        } while (obstructed);
+		} while (obstructed);
     }
 
     void VerifyMouseInput()
@@ -95,7 +96,8 @@ public class Camera_Manager : MonoBehaviour {
         {
             SmoothCameraAxis(userZoomDistance != zoomDistance);
             ApplyCameraPosition();
-            userZoomDistance = zoomDistance;
+			if (!isObstructed)
+            	userZoomDistance = zoomDistance;
         }
     }
     
@@ -143,7 +145,9 @@ public class Camera_Manager : MonoBehaviour {
         {
             zoomDistance = Helper.CameraClamp(zoomDistance, ZoomLimit.x, ZoomLimit.y);
         }
-        _newPosition = new Vector3(oldmouseX, oldmouseY, zoomDistance);
+		zoomDistance = Helper.CameraClamp(zoomDistance, 0.3f, ZoomLimit.y);
+
+		_newPosition = new Vector3(oldmouseX, oldmouseY, zoomDistance);
         _newPosition = CreatePositionVector(oldmouseX, oldmouseY, _newPosition);
     }
 
@@ -250,6 +254,7 @@ public class Camera_Manager : MonoBehaviour {
         if (closestDistanceToCharacter != -1F)
         {
             cameraObstructionBool = true;
+			isObstructed = true;
             if (obstructedCheckCount < 2)
             {
                 //if (zoomDistance - obstructedSmoothTime > closestDistanceToCharacter - Camera.main.nearClipPlane)
@@ -262,6 +267,9 @@ public class Camera_Manager : MonoBehaviour {
             SmoothCameraAxis(true);
             ApplyCameraPosition();
         }
+		else{
+			isObstructed = false;
+		}
         return (cameraObstructionBool);
     }
 }
