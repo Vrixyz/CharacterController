@@ -51,6 +51,6 @@ public class Animation_Manager : MonoBehaviour {
             (back ? MotionStateList.Backward : 0) |
             (left ? MotionStateList.Left : 0) |
             (right ? MotionStateList.Right : 0);
-        print(characterMotionState);
+        //print(characterMotionState);
     }
 }

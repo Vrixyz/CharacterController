@@ -21,4 +21,9 @@ public class PuzzleCubeLock : MonoBehaviour {
         _isLocked = true;
         return (true);
     }
+
+    public void Unlock()
+    {
+        _isLocked = false;
+    }
 }

@@ -218,30 +218,39 @@ public class Camera_Manager : MonoBehaviour {
         // Actual Code
         float      closestDistanceToCharacter = -1F;
         RaycastHit hitInfo;
+        int mask = ~(1 << LayerMask.NameToLayer("CameraIgnore"));
 
-        if (Physics.Linecast(targetLookAt, backBuffer, out hitInfo, ~LayerMask.NameToLayer("Player")))
+        if (Physics.Linecast(targetLookAt, backBuffer, out hitInfo, mask))
         {
             closestDistanceToCharacter = hitInfo.distance;
         }
-        if (Physics.Linecast(targetLookAt, cpp.UpperRight, out hitInfo, ~LayerMask.NameToLayer("Player")))
+        if (Physics.Linecast(targetLookAt, cpp.UpperRight, out hitInfo, mask))
         {
             if (closestDistanceToCharacter == -1F || hitInfo.distance < closestDistanceToCharacter)
+            {
                 closestDistanceToCharacter = hitInfo.distance;
+            }
         }
-        if (Physics.Linecast(targetLookAt, cpp.UpperLeft, out hitInfo, ~LayerMask.NameToLayer("Player")))
+        if (Physics.Linecast(targetLookAt, cpp.UpperLeft, out hitInfo, mask))
+        {
+            if (closestDistanceToCharacter == -1F || hitInfo.distance < closestDistanceToCharacter)
+            {
+                closestDistanceToCharacter = hitInfo.distance;
+            }
+        }
+        if (Physics.Linecast(targetLookAt, cpp.LowerLeft, out hitInfo, mask))
+        {
+            if (closestDistanceToCharacter == -1F || hitInfo.distance < closestDistanceToCharacter)
+            {
+                closestDistanceToCharacter = hitInfo.distance;
+            }
+        }
+        if (Physics.Linecast(targetLookAt, cpp.LowerRight, out hitInfo, mask))
         {
             if (closestDistanceToCharacter == -1F ||  hitInfo.distance < closestDistanceToCharacter)
+            {
                 closestDistanceToCharacter = hitInfo.distance;
-        }
-        if (Physics.Linecast(targetLookAt, cpp.LowerLeft, out hitInfo, ~LayerMask.NameToLayer("Player")))
-        {
-            if (closestDistanceToCharacter == -1F ||  hitInfo.distance < closestDistanceToCharacter)
-                closestDistanceToCharacter = hitInfo.distance;
-        }
-        if (Physics.Linecast(targetLookAt, cpp.LowerRight, out hitInfo, ~LayerMask.NameToLayer("Player")))
-        {
-            if (closestDistanceToCharacter == -1F ||  hitInfo.distance < closestDistanceToCharacter)
-                closestDistanceToCharacter = hitInfo.distance;
+            }
         }
         return (closestDistanceToCharacter);
     }
