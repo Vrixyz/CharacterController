@@ -4,6 +4,15 @@ using System.Collections;
 public class PuzzleCubeDestination : MonoBehaviour {
     private GameObject puzzleCube = null;
     public float dragForce = 10F;
+    public bool firing = false;
+
+    public const int waveFrequence = 6000;
+
+    private Vector3[] _directions = new Vector3[]{Vector3.forward,
+    Vector3.left,
+    Vector3.right,
+    Vector3.back
+};
 
 	// Use this for initialization
 	void Start () {
@@ -24,6 +33,11 @@ public class PuzzleCubeDestination : MonoBehaviour {
                 collider.enabled = false;
             }
         }
+        if (puzzleCube == null && firing &&
+            Random.Range(0, waveFrequence) == 0)
+        {
+            HeatWave.Create(gameObject, transform.TransformDirection(_directions[Random.Range(0, 4)]));
+        }
 	}
 
     void OnCollisionEnter(Collision collision)
@@ -33,8 +47,16 @@ public class PuzzleCubeDestination : MonoBehaviour {
             // Only acquire cube if not already acquired
             if (puzzleCube == null &&
                 collision.gameObject.GetComponent<PuzzleCubeLock>().TryLock())
+            {
                 puzzleCube = collision.gameObject;
+            }
             Physics.IgnoreCollision(collision.collider, collider);
         }
+    }
+
+    public void Reset()
+    {
+        puzzleCube = null;
+        firing = false;
     }
 }

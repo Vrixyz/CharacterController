@@ -2,13 +2,18 @@
 using System.Collections;
 
 public class ResetPuzzle : MonoBehaviour {
-    private ArrayList _transforms;
+    private ArrayList _transforms = new ArrayList();
+    private ArrayList _gameObjects = new ArrayList();
 
 	// Use this for initialization
 	void Start () {
-        foreach (Transform child in transform)
+        foreach (Transform child in gameObject.GetComponentsInChildren<Transform>())
         {
-            _transforms.Add(child);
+            if (child != transform)
+            {
+                _transforms.Add(child.position);
+                _gameObjects.Add(child.gameObject);
+            }
         }
 	}
 	
@@ -19,17 +24,31 @@ public class ResetPuzzle : MonoBehaviour {
 
     public void Reset()
     {
-        int  i = 0;
+        int i = 0;
 
-        foreach (Transform child in transform)
+        HeatWave.Reset();
+        foreach (GameObject child in _gameObjects)
         {
-            child.parent.transform.position = ((Transform)_transforms[i]).position;
-            child.parent.transform.rotation = ((Transform)_transforms[i]).rotation;
+            child.transform.position = ((Vector3)_transforms[i]);
+            child.transform.localRotation = Quaternion.identity;
 
             PuzzleCubeLock  cubeLock = child.gameObject.GetComponent<PuzzleCubeLock>();
+            Collider collider = child.gameObject.GetComponent<Collider>();
+            PuzzleCubeDestination destination = child.gameObject.GetComponent<PuzzleCubeDestination>();
 
             if (cubeLock != null)
                 cubeLock.Unlock();
+            if (collider != null)
+                collider.enabled = true;
+            if (child.gameObject.rigidbody != null)
+            {
+                child.gameObject.rigidbody.velocity = Vector3.zero;
+                child.gameObject.rigidbody.angularVelocity = Vector3.zero;
+                child.gameObject.rigidbody.Sleep();
+            }
+            if (destination != null)
+                destination.Reset();
+            ++i;
         }
     }
 }

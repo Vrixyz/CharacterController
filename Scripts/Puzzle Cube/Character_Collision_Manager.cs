@@ -36,6 +36,7 @@ public class Character_Collision_Manager : MonoBehaviour {
 
             // Only apply to one axis or none
             force.y = 0;
+            force = _puzzleCube.transform.InverseTransformDirection(force);
             if (Mathf.Abs(characterDirection.x) > Mathf.Abs(characterDirection.z))
                 force.z = 0;
             else if (Mathf.Abs(characterDirection.x) < Mathf.Abs(characterDirection.z))
@@ -43,7 +44,8 @@ public class Character_Collision_Manager : MonoBehaviour {
             else
                 force = Vector3.zero;
             force *= Strength;
-            _puzzleCube.AddForce(force);
+            //_puzzleCube.AddForce(force);
+            _puzzleCube.AddRelativeForce(force);
         }
 	}
 
