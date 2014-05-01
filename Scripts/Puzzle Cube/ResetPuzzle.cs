@@ -2,7 +2,8 @@
 using System.Collections;
 
 public class ResetPuzzle : MonoBehaviour {
-    private ArrayList _transforms = new ArrayList();
+    private ArrayList _positions = new ArrayList();
+    private ArrayList _rotations = new ArrayList();
     private ArrayList _gameObjects = new ArrayList();
 
 	// Use this for initialization
@@ -11,7 +12,8 @@ public class ResetPuzzle : MonoBehaviour {
         {
             if (child != transform)
             {
-                _transforms.Add(child.position);
+                _positions.Add(child.position);
+                _rotations.Add(child.rotation);
                 _gameObjects.Add(child.gameObject);
             }
         }
@@ -29,8 +31,8 @@ public class ResetPuzzle : MonoBehaviour {
         HeatWave.Reset();
         foreach (GameObject child in _gameObjects)
         {
-            child.transform.position = ((Vector3)_transforms[i]);
-            child.transform.localRotation = Quaternion.identity;
+            child.transform.position = ((Vector3)_positions[i]);
+            child.transform.rotation = ((Quaternion)_rotations[i]);
 
             PuzzleCubeLock  cubeLock = child.gameObject.GetComponent<PuzzleCubeLock>();
             Collider collider = child.gameObject.GetComponent<Collider>();

@@ -4,9 +4,9 @@ using System.Collections;
 public class PuzzleCubeDestination : MonoBehaviour {
     private GameObject puzzleCube = null;
     public float dragForce = 10F;
-    public bool firing = false;
+    public bool firing = true;
 
-    public const int waveFrequence = 6000;
+    public const int waveFrequence = 1000;
 
     private Vector3[] _directions = new Vector3[]{Vector3.forward,
     Vector3.left,
@@ -36,7 +36,10 @@ public class PuzzleCubeDestination : MonoBehaviour {
         if (puzzleCube == null && firing &&
             Random.Range(0, waveFrequence) == 0)
         {
-            HeatWave.Create(gameObject, transform.TransformDirection(_directions[Random.Range(0, 4)]));
+            Vector3 direction = GameObject.FindGameObjectWithTag("Player").transform.position - transform.position;
+            direction.Normalize();
+            direction.y = 0;
+            HeatWave.Create(gameObject, direction);//transform.TransformDirection(_directions[Random.Range(0, 4)]));
         }
 	}
 
@@ -57,6 +60,6 @@ public class PuzzleCubeDestination : MonoBehaviour {
     public void Reset()
     {
         puzzleCube = null;
-        firing = false;
+        firing = true;
     }
 }

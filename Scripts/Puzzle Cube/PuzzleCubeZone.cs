@@ -15,25 +15,25 @@ public class PuzzleCubeZone : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Player")
+        /*if (other.gameObject.tag == "Player")
         {
             foreach (PuzzleCubeDestination cubeDestination in
                 gameObject.GetComponentsInChildren<PuzzleCubeDestination>())
             {
                 cubeDestination.firing = true;
             }
-        }
+        }*/
     }
 
     void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.tag == "Player")
+        /*if (other.gameObject.tag == "Player")
         {
             foreach (PuzzleCubeDestination cubeDestination in
                 gameObject.GetComponentsInChildren<PuzzleCubeDestination>())
             {
                 cubeDestination.firing = false;
             }
-        }
+        }*/
     }
 }
