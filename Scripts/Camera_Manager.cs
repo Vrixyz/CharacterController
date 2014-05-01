@@ -12,14 +12,12 @@ public class Camera_Manager : MonoBehaviour {
     private float                   userZoomDistance;
     public float                    boundUp = 0.7f;
     public float                    boundDown = 45f;
-    public float                    mouseSensitivity = 1F;
 
     private Vector3 _newPosition;
 
     public float unobstructedSmoothTime = 0.2F;
     public float obstructedSmoothTime = 0.1F;
 
-	private bool  isObstructed = false;
     private float xVel = 0F;
     private float yVel = 0F;
     private float zoomVel = 0F;
@@ -59,7 +57,7 @@ public class Camera_Manager : MonoBehaviour {
         VerifyMouseInput();
 
         int obstructedCameraCount = 0;
-		bool obstructed = false;
+        bool obstructed = false;
         float currentZoomDistance = zoomDistance;
 
         zoomDistance = userZoomDistance;
@@ -80,7 +78,7 @@ public class Camera_Manager : MonoBehaviour {
         do {
             obstructed = ObstructedCameraChecked(obstructedCameraCount);
             obstructedCameraCount++;
-		} while (obstructed);
+        } while (obstructed);
     }
 
     void VerifyMouseInput()
@@ -96,8 +94,7 @@ public class Camera_Manager : MonoBehaviour {
         {
             SmoothCameraAxis(userZoomDistance != zoomDistance);
             ApplyCameraPosition();
-			if (!isObstructed)
-            	userZoomDistance = zoomDistance;
+            userZoomDistance = zoomDistance;
         }
     }
     
@@ -113,9 +110,9 @@ public class Camera_Manager : MonoBehaviour {
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
 
-        float x = Mathf.SmoothDamp(0, mouseX * mouseSensitivity,
+        float x = Mathf.SmoothDamp(0, mouseX,
             ref xVel, smoothTime);
-        float y = Mathf.SmoothDamp(0, mouseY * mouseSensitivity,
+        float y = Mathf.SmoothDamp(0, mouseY,
             ref yVel, smoothTime);
         oldmouseX += x;
         oldmouseY += y;
@@ -145,9 +142,7 @@ public class Camera_Manager : MonoBehaviour {
         {
             zoomDistance = Helper.CameraClamp(zoomDistance, ZoomLimit.x, ZoomLimit.y);
         }
-		zoomDistance = Helper.CameraClamp(zoomDistance, 0.3f, ZoomLimit.y);
-
-		_newPosition = new Vector3(oldmouseX, oldmouseY, zoomDistance);
+        _newPosition = new Vector3(oldmouseX, oldmouseY, zoomDistance);
         _newPosition = CreatePositionVector(oldmouseX, oldmouseY, _newPosition);
     }
 
@@ -227,30 +222,22 @@ public class Camera_Manager : MonoBehaviour {
         if (Physics.Linecast(targetLookAt, cpp.UpperRight, out hitInfo, mask))
         {
             if (closestDistanceToCharacter == -1F || hitInfo.distance < closestDistanceToCharacter)
-            {
                 closestDistanceToCharacter = hitInfo.distance;
-            }
         }
         if (Physics.Linecast(targetLookAt, cpp.UpperLeft, out hitInfo, mask))
         {
-            if (closestDistanceToCharacter == -1F || hitInfo.distance < closestDistanceToCharacter)
-            {
+            if (closestDistanceToCharacter == -1F ||  hitInfo.distance < closestDistanceToCharacter)
                 closestDistanceToCharacter = hitInfo.distance;
-            }
         }
         if (Physics.Linecast(targetLookAt, cpp.LowerLeft, out hitInfo, mask))
         {
-            if (closestDistanceToCharacter == -1F || hitInfo.distance < closestDistanceToCharacter)
-            {
+            if (closestDistanceToCharacter == -1F ||  hitInfo.distance < closestDistanceToCharacter)
                 closestDistanceToCharacter = hitInfo.distance;
-            }
         }
         if (Physics.Linecast(targetLookAt, cpp.LowerRight, out hitInfo, mask))
         {
             if (closestDistanceToCharacter == -1F ||  hitInfo.distance < closestDistanceToCharacter)
-            {
                 closestDistanceToCharacter = hitInfo.distance;
-            }
         }
         return (closestDistanceToCharacter);
     }
@@ -263,7 +250,6 @@ public class Camera_Manager : MonoBehaviour {
         if (closestDistanceToCharacter != -1F)
         {
             cameraObstructionBool = true;
-			isObstructed = true;
             if (obstructedCheckCount < 2)
             {
                 //if (zoomDistance - obstructedSmoothTime > closestDistanceToCharacter - Camera.main.nearClipPlane)
@@ -276,9 +262,6 @@ public class Camera_Manager : MonoBehaviour {
             SmoothCameraAxis(true);
             ApplyCameraPosition();
         }
-		else{
-			isObstructed = false;
-		}
         return (cameraObstructionBool);
     }
 }
