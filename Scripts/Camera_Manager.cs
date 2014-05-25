@@ -84,7 +84,7 @@ public class Camera_Manager : MonoBehaviour {
     void VerifyMouseInput()
     {
         CameraCollisionPointsCheck(TargetLookAtTransform.position, _newPosition);
-        if (Input.GetButton("Fire2"))
+//        if (Input.GetButton("Fire2"))
         {
             SmoothCameraPosition();
             ApplyCameraPosition();

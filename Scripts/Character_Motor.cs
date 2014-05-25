@@ -94,24 +94,26 @@ public class Character_Motor : MonoBehaviour {
             camera.ApplyCameraPosition();
         }
     }
-
+    bool ignoreSlide = false;
     public void Jump()
     {
         if (!controller.isGrounded)
             return;
         moveVector.y = jumpStrength * Time.deltaTime;
+        slideVector = new Vector3(0, 0, 0);
+        ignoreSlide = true;
         return;
     }
 
     public void ApplyGravity()
     {
+        moveVector.y -= gravityStrength * Time.deltaTime;
         if (controller.isGrounded)
         {
-            moveVector.y = -1;
+            if (moveVector.y < -1)
+                moveVector.y = -1;
             return;
         }
-
-        moveVector.y -= gravityStrength * Time.deltaTime;
     }
 
     public void Slide()
@@ -133,6 +135,14 @@ public class Character_Motor : MonoBehaviour {
                 slideVector = hitInfo.normal;
                 slideVector.y = -slideVector.y;
                 slideVector *= SpeedLimit();
+                
+                if (ignoreSlide && slideVector.y < 15)
+                {
+                    slideVector.y = 0;
+                    ignoreSlide = false;
+                    //return;
+                }
+                
                 if (hitInfo.normal.y < 0.7F)
                 {
                     moveVector = slideVector * Time.deltaTime;
@@ -142,6 +152,7 @@ public class Character_Motor : MonoBehaviour {
                     moveVector += slideVector * Time.deltaTime;
                 }
             }
+           // print("slideVector: " + slideVector);
         }
     }
 }
