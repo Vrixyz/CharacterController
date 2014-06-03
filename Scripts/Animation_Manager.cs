@@ -4,9 +4,23 @@ using System.Collections;
 public class Animation_Manager : MonoBehaviour {
     public static Animation_Manager Instance;
 
+    private Transform climbVolumeTransform = null;
+
     public void Awake()
     {
         Instance = this;
+    }
+
+    public void SetClimbVolumeTransform(Transform climbTransform)
+    {
+        climbVolumeTransform = climbTransform;
+        Character_Manager.Instance.isClimbing = true;
+    }
+
+    public void ClearClimbVolumeTransform()
+    {
+        climbVolumeTransform = null;
+        Character_Manager.Instance.isClimbing = false;
     }
 
     public enum MotionStateList
@@ -24,14 +38,13 @@ public class Animation_Manager : MonoBehaviour {
 
     public enum AnimationStateList
     {
-        Dead = 0,
+        Stationary = 0,
         Jumping,
         Falling,
         Landing,
         Using,
         Climbing,
-        Standing,
-        Stationary,
+        Sliding,
         Forward,
         Backward,
         Left,
@@ -39,11 +52,13 @@ public class Animation_Manager : MonoBehaviour {
         LeftForward,
         RightForward,
         LeftBackward,
-        RightBackward
+        RightBackward,
+        Dead
     }
 
     public MotionStateList  characterMotionState;
     public AnimationStateList characterAnimationState;
+    public AnimationStateList previousCharacterAnimationState;
 
 	// Use this for initialization
 	void Start () {
@@ -61,18 +76,21 @@ public class Animation_Manager : MonoBehaviour {
         if (characterAnimationState == AnimationStateList.Dead)
             return;
         if (!gameObject.GetComponent<CharacterController>().isGrounded &&
-            (characterAnimationState != AnimationStateList.Jumping ||
-            characterAnimationState != AnimationStateList.Falling))
+            characterAnimationState != AnimationStateList.Jumping &&
+            characterAnimationState != AnimationStateList.Falling)
         {
+            previousCharacterAnimationState = characterAnimationState;
             characterAnimationState = AnimationStateList.Falling;
-            // Do Falling
+            FireFallAnimationState();
         }
         if (gameObject.GetComponent<CharacterController>().isGrounded &&
-            (characterAnimationState != AnimationStateList.Jumping || // other stuf implying moving
-            characterAnimationState != AnimationStateList.Landing ||
-            characterAnimationState != AnimationStateList.Climbing ||
-            characterAnimationState != AnimationStateList.Using))
+            (characterAnimationState != AnimationStateList.Jumping && // other stuf implying moving
+            characterAnimationState != AnimationStateList.Landing &&
+            characterAnimationState != AnimationStateList.Climbing &&
+            characterAnimationState != AnimationStateList.Using &&
+            characterAnimationState != AnimationStateList.Sliding))
         {
+            previousCharacterAnimationState = characterAnimationState;
             switch (characterMotionState)
             {
                 case MotionStateList.Stationary:
@@ -120,7 +138,7 @@ public class Animation_Manager : MonoBehaviour {
                 AnimationAfterRunBackwardsState();
                 break;
             case AnimationStateList.Left:
-            case AnimationStateList.LeftForward:    
+            case AnimationStateList.LeftForward:
                 AnimationAfterStrafeRunLeftState();
                 break;
             case AnimationStateList.Right:
@@ -133,6 +151,40 @@ public class Animation_Manager : MonoBehaviour {
             case AnimationStateList.RightBackward:
                 AnimationAfterStrafeBackwardsRightState();
                 break;
+            case AnimationStateList.Using:
+                AnimationAfterUsingState();
+                break;
+            case AnimationStateList.Sliding:
+                AnimationAfterSlidingState();
+                break;
+            case AnimationStateList.Jumping:
+                AnimationAfterJumpState();
+                break;
+            case AnimationStateList.Falling:
+                AnimationAfterFallState();
+                break;
+            case AnimationStateList.Landing:
+                AnimationAfterLandState();
+                break;
+        }
+    }
+
+    public void AnimationAfterSlidingState()
+    {
+        if (!gameObject.GetComponent<Character_Motor>().isSliding)
+        {
+            GameObject.FindGameObjectWithTag("AnimatedPlayer").animation.CrossFade("Idle");
+        } else if (!GameObject.FindGameObjectWithTag("AnimatedPlayer").animation.IsPlaying("Run")) {
+            GameObject.FindGameObjectWithTag("AnimatedPlayer").animation.CrossFade("Run");
+        }
+    }
+
+    public void AnimationAfterUsingState()
+    {
+        if (!GameObject.FindGameObjectWithTag("AnimatedPlayer").animation.IsPlaying("RunJump"))
+        {
+            previousCharacterAnimationState = characterAnimationState;
+            characterAnimationState = AnimationStateList.Stationary;
         }
     }
 
@@ -164,6 +216,107 @@ public class Animation_Manager : MonoBehaviour {
     {
         GameObject.FindGameObjectWithTag("AnimatedPlayer").animation.CrossFade("StrafeBackRight");
     }
+    public void AnimationAfterJumpState()
+    {
+        if (gameObject.GetComponent<CharacterController>().isGrounded)
+        {
+
+            if (previousCharacterAnimationState == AnimationStateList.Forward)
+            {
+                GameObject.FindGameObjectWithTag("AnimatedPlayer").animation.CrossFade("Run"); // RunLand
+            }
+            else
+            {
+                GameObject.FindGameObjectWithTag("AnimatedPlayer").animation.CrossFade("Idle"); // JumpLand
+            }
+            characterAnimationState = AnimationStateList.Landing;
+        }
+        else if (!GameObject.FindGameObjectWithTag("AnimatedPlayer").animation.IsPlaying("RunJump"))
+        {
+            characterAnimationState = AnimationStateList.Falling;
+            GameObject.FindGameObjectWithTag("AnimatedPlayer").animation.CrossFade("Fall"); // Fall (should be looped)
+        }
+    }
+    public void AnimationAfterFallState()
+    {
+        if (gameObject.GetComponent<CharacterController>().isGrounded)
+        {
+            if (previousCharacterAnimationState == AnimationStateList.Forward)
+            {
+                GameObject.FindGameObjectWithTag("AnimatedPlayer").animation.CrossFade("Run"); // RunLand
+            }
+            else
+            {
+                GameObject.FindGameObjectWithTag("AnimatedPlayer").animation.CrossFade("StrafeBackLeft"); // JumpLand
+            }
+            characterAnimationState = AnimationStateList.Landing;
+        }
+    }
+    public void AnimationAfterLandState()
+    {
+        if (previousCharacterAnimationState == AnimationStateList.Forward)
+        {
+            if (!GameObject.FindGameObjectWithTag("AnimatedPlayer").animation.IsPlaying("Run")) // RunLand
+            {
+                characterAnimationState = AnimationStateList.Forward;
+                GameObject.FindGameObjectWithTag("AnimatedPlayer").animation.Play("Run");
+            }
+        }
+        else if (!GameObject.FindGameObjectWithTag("AnimatedPlayer").animation.IsPlaying("StrafeBackLeft")) // JumpLand
+        {
+            characterAnimationState = AnimationStateList.Stationary;
+            GameObject.FindGameObjectWithTag("AnimatedPlayer").animation.Play("Idle");
+        }
+    }
+
+    public void FireUseAnimationState()
+    {
+        previousCharacterAnimationState = characterAnimationState;
+        characterAnimationState = AnimationStateList.Using;
+        GameObject.FindGameObjectWithTag("AnimatedPlayer").animation.CrossFade("RunJump"); // Use
+    }
+
+    public void FireSlideAnimationState()
+    {
+        previousCharacterAnimationState = characterAnimationState;
+        characterAnimationState = AnimationStateList.Sliding;
+        GameObject.FindGameObjectWithTag("AnimatedPlayer").animation.CrossFade("Run"); // Slide
+    }
+
+    public void FireJumpAnimationState()
+    {
+        if (!gameObject.GetComponent<CharacterController>().isGrounded ||
+            IsDead() || characterAnimationState == AnimationStateList.Jumping)
+            return;
+        previousCharacterAnimationState = characterAnimationState;
+        characterAnimationState = AnimationStateList.Jumping;
+        GameObject.FindGameObjectWithTag("AnimatedPlayer").animation.CrossFade("RunJump");
+    }
+
+    public void FireClimbAnimationState()
+    {
+        if (!gameObject.GetComponent<CharacterController>().isGrounded ||
+            IsDead() || climbVolumeTransform == null)
+            return;
+        print("" + climbVolumeTransform.rotation.y + "//" + transform.rotation.y + " = " + Mathf.Abs(Mathf.Abs(climbVolumeTransform.rotation.y - transform.rotation.y)));
+        if (Mathf.Abs(Mathf.Abs(climbVolumeTransform.rotation.y - transform.rotation.y)) > (Mathf.PI / 6F))
+            Character_Manager.Instance.DelegateJump();
+        else
+        {
+            previousCharacterAnimationState = characterAnimationState;
+            characterAnimationState = AnimationStateList.Climbing;
+            GameObject.FindGameObjectWithTag("AnimatedPlayer").animation.CrossFade("StrafeRunRight"); // Climb
+        }
+    }
+
+    public void FireFallAnimationState()
+    {
+        if (IsDead())
+            return;
+        previousCharacterAnimationState = characterAnimationState;
+        characterAnimationState = AnimationStateList.Falling;
+        GameObject.FindGameObjectWithTag("AnimatedPlayer").animation.CrossFade("Fall");
+    }
 
     public void CurrentMotionState()
     {
@@ -182,5 +335,10 @@ public class Animation_Manager : MonoBehaviour {
             (back ? MotionStateList.Backward : 0) |
             (left ? MotionStateList.Left : 0) |
             (right ? MotionStateList.Right : 0);
+    }
+
+    public bool IsDead()
+    {
+        return (characterAnimationState == AnimationStateList.Dead);
     }
 }

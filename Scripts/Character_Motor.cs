@@ -19,6 +19,8 @@ public class Character_Motor : MonoBehaviour {
     CharacterController controller;
     public Vector3 slideVector;
 
+    public bool isSliding;
+
     void Awake()
     {
         Character_Motor.Instance = this;
@@ -132,17 +134,21 @@ public class Character_Motor : MonoBehaviour {
         {
             if (hitInfo.normal.y < 0.99F)
             {
+                if (isSliding == false)
+                {
+                    gameObject.GetComponent<Animation_Manager>().FireSlideAnimationState();
+                    isSliding = true;
+                }
                 slideVector = hitInfo.normal;
                 slideVector.y = -slideVector.y;
                 slideVector *= SpeedLimit();
-                
+
                 if (ignoreSlide && slideVector.y < 15)
                 {
                     slideVector.y = 0;
                     ignoreSlide = false;
-                    //return;
                 }
-                
+
                 if (hitInfo.normal.y < 0.7F)
                 {
                     moveVector = slideVector * Time.deltaTime;
@@ -152,7 +158,10 @@ public class Character_Motor : MonoBehaviour {
                     moveVector += slideVector * Time.deltaTime;
                 }
             }
-           // print("slideVector: " + slideVector);
+            else
+            {
+                isSliding = false;
+            }
         }
     }
 }

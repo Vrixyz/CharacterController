@@ -6,6 +6,7 @@ public class Character_Manager : MonoBehaviour {
 	public static Character_Manager Instance;
 
 	public	float	deadZone;
+    public  bool    isClimbing = false;
 
 	void Awake()
 	{
@@ -43,15 +44,32 @@ public class Character_Manager : MonoBehaviour {
         gameObject.GetComponent<Animation_Manager>().CurrentMotionState();
 	}
 
-	void DelegateJump()
+	public void DelegateJump()
 	{
-		//Character_Animator.Instance.JumpAnimation();
+        gameObject.GetComponent<Animation_Manager>().FireJumpAnimationState();
 		Character_Motor.Instance.Jump();
 	}
 
+    public void DelegateClimb()
+    {
+        gameObject.GetComponent<Animation_Manager>().FireClimbAnimationState();
+    }
+
+    public void DelegateUse()
+    {
+        gameObject.GetComponent<Animation_Manager>().FireUseAnimationState();
+    }
+
 	void ActionInput()
 	{
-		if (Input.GetButtonDown("Jump"))
-			DelegateJump();
+        if (Input.GetButtonDown("Jump"))
+        {
+            if (isClimbing)
+                DelegateClimb();
+            else
+                DelegateJump();
+        }
+        if (Input.GetKeyDown(KeyCode.F))
+            DelegateUse();
 	}
 }
