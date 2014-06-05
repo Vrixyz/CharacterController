@@ -5,10 +5,20 @@ public class Animation_Manager : MonoBehaviour {
     public static Animation_Manager Instance;
 
     private Transform climbVolumeTransform = null;
+    private Transform characterRoot = null;
+
+    public Transform climbAnchorAdjustment = null;
+    public Transform postClimbAdjustment = null;
+
+    public float jumpAnimationStartTime = 0.3F;
+    public float anchorAnimationStartTime = 0.5F;
+
+    public string RootBone = "Soldier";
 
     public void Awake()
     {
         Instance = this;
+        transform.FindChild(RootBone);
     }
 
     public void SetClimbVolumeTransform(Transform climbTransform)
@@ -269,6 +279,42 @@ public class Animation_Manager : MonoBehaviour {
         }
     }
 
+    public void AnimationAfterClimbState()
+    {
+        if (GameObject.FindGameObjectWithTag("AnimatedPlayer").animation.IsPlaying("StrafeRunRight"))
+        {
+            float currentAnimationTime = GameObject.FindGameObjectWithTag("AnimatedPlayer").animation["StrafeRunRight"].time;
+            if (currentAnimationTime > jumpAnimationStartTime &&
+                currentAnimationTime < anchorAnimationStartTime)
+            {
+                float newrot = Mathf.Lerp(transform.rotation.y, climbVolumeTransform.rotation.y,
+                    (currentAnimationTime - jumpAnimationStartTime) / (anchorAnimationStartTime - jumpAnimationStartTime));
+
+                transform.rotation.Set(transform.rotation.x, newrot, transform.rotation.z, transform.rotation.w);
+
+                Vector3 WorldClimbAnchorAdjustment = transform.TransformDirection(climbAnchorAdjustment.position.x,
+                     climbAnchorAdjustment.position.y,
+                     climbAnchorAdjustment.position.z);
+
+                float newx = Mathf.Lerp(transform.position.x, climbVolumeTransform.position.x,
+                    (currentAnimationTime - jumpAnimationStartTime) / (anchorAnimationStartTime - jumpAnimationStartTime));
+                float newz = Mathf.Lerp(transform.position.z, climbVolumeTransform.position.z,
+                    (currentAnimationTime - jumpAnimationStartTime) / (anchorAnimationStartTime - jumpAnimationStartTime));
+
+                transform.position.Set(newx + WorldClimbAnchorAdjustment.x, transform.position.y, newz + WorldClimbAnchorAdjustment.z);
+            }
+            else
+            {
+                characterAnimationState = AnimationStateList.Stationary;
+                GameObject.FindGameObjectWithTag("AnimatedPlayer").animation.Play("Idle");
+
+                Vector3 WorldPostClimbAnchorAdjustment = transform.TransformDirection(postClimbAdjustment.position.x,
+                     postClimbAdjustment.position.y,
+                     postClimbAdjustment.position.z);
+            }
+        }
+    }
+
     public void FireUseAnimationState()
     {
         previousCharacterAnimationState = characterAnimationState;
@@ -298,7 +344,6 @@ public class Animation_Manager : MonoBehaviour {
         if (!gameObject.GetComponent<CharacterController>().isGrounded ||
             IsDead() || climbVolumeTransform == null)
             return;
-        print("" + climbVolumeTransform.rotation.y + "//" + transform.rotation.y + " = " + Mathf.Abs(Mathf.Abs(climbVolumeTransform.rotation.y - transform.rotation.y)));
         if (Mathf.Abs(Mathf.Abs(climbVolumeTransform.rotation.y - transform.rotation.y)) > (Mathf.PI / 6F))
             Character_Manager.Instance.DelegateJump();
         else
@@ -311,7 +356,8 @@ public class Animation_Manager : MonoBehaviour {
 
     public void FireFallAnimationState()
     {
-        if (IsDead())
+        if (IsDead() ||
+            Character_Motor.Instance.VerticalVelocity >= -4F)
             return;
         previousCharacterAnimationState = characterAnimationState;
         characterAnimationState = AnimationStateList.Falling;
