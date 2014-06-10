@@ -2,6 +2,8 @@
 using System.Collections;
 
 public class ClimbVolumeManager : MonoBehaviour {
+    public Transform climbAnchorAdjustment = null;
+    public Transform postClimbAdjustment = null;
 
 	// Use this for initialization
 	void Start () {
@@ -19,7 +21,7 @@ public class ClimbVolumeManager : MonoBehaviour {
 
         if (am != null)
         {
-            am.SetClimbVolumeTransform(transform);
+            am.SetClimbVolumeTransform(transform, climbAnchorAdjustment, postClimbAdjustment);
         }
     }
 

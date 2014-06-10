@@ -10,20 +10,23 @@ public class Animation_Manager : MonoBehaviour {
     public Transform climbAnchorAdjustment = null;
     public Transform postClimbAdjustment = null;
 
-    public float jumpAnimationStartTime = 0.3F;
-    public float anchorAnimationStartTime = 0.5F;
+    public float jumpAnimationStartTime = 0.1F;
+    public float anchorAnimationStartTime = 0.8F;
 
     public string RootBone = "Soldier";
 
     public void Awake()
     {
         Instance = this;
-        transform.FindChild(RootBone);
+        characterRoot = transform.FindChild(RootBone);
     }
 
-    public void SetClimbVolumeTransform(Transform climbTransform)
+    public void SetClimbVolumeTransform(Transform climbTransform, Transform climbAnchor,
+        Transform postClimb)
     {
         climbVolumeTransform = climbTransform;
+        climbAnchorAdjustment = climbAnchor;
+        postClimbAdjustment = postClimb;
         Character_Manager.Instance.isClimbing = true;
     }
 
@@ -176,6 +179,9 @@ public class Animation_Manager : MonoBehaviour {
             case AnimationStateList.Landing:
                 AnimationAfterLandState();
                 break;
+           case AnimationStateList.Climbing:
+                AnimationAfterClimbState();
+                break;
         }
     }
 
@@ -287,6 +293,7 @@ public class Animation_Manager : MonoBehaviour {
             if (currentAnimationTime > jumpAnimationStartTime &&
                 currentAnimationTime < anchorAnimationStartTime)
             {
+                print("In time");
                 float newrot = Mathf.Lerp(transform.rotation.y, climbVolumeTransform.rotation.y,
                     (currentAnimationTime - jumpAnimationStartTime) / (anchorAnimationStartTime - jumpAnimationStartTime));
 
@@ -303,8 +310,9 @@ public class Animation_Manager : MonoBehaviour {
 
                 transform.position.Set(newx + WorldClimbAnchorAdjustment.x, transform.position.y, newz + WorldClimbAnchorAdjustment.z);
             }
-            else
+            else if (currentAnimationTime > jumpAnimationStartTime)
             {
+                print("Out of time");
                 characterAnimationState = AnimationStateList.Stationary;
                 GameObject.FindGameObjectWithTag("AnimatedPlayer").animation.Play("Idle");
 
