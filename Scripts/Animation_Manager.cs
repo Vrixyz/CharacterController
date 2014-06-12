@@ -11,7 +11,7 @@ public class Animation_Manager : MonoBehaviour {
     public Transform postClimbAdjustment = null;
 
     public float jumpAnimationStartTime = 0.1F;
-    public float anchorAnimationStartTime = 0.8F;
+    public float anchorAnimationStartTime = 2.8F;
 
     public string RootBone = "Soldier";
 
@@ -294,10 +294,11 @@ public class Animation_Manager : MonoBehaviour {
                 currentAnimationTime < anchorAnimationStartTime)
             {
                 print("In time");
+
                 float newrot = Mathf.Lerp(transform.rotation.y, climbVolumeTransform.rotation.y,
                     (currentAnimationTime - jumpAnimationStartTime) / (anchorAnimationStartTime - jumpAnimationStartTime));
 
-                transform.rotation.Set(transform.rotation.x, newrot, transform.rotation.z, transform.rotation.w);
+                transform.rotation = new Quaternion(transform.rotation.x, newrot, transform.rotation.z, transform.rotation.w);
 
                 Vector3 WorldClimbAnchorAdjustment = transform.TransformDirection(climbAnchorAdjustment.position.x,
                      climbAnchorAdjustment.position.y,
@@ -308,18 +309,19 @@ public class Animation_Manager : MonoBehaviour {
                 float newz = Mathf.Lerp(transform.position.z, climbVolumeTransform.position.z,
                     (currentAnimationTime - jumpAnimationStartTime) / (anchorAnimationStartTime - jumpAnimationStartTime));
 
-                transform.position.Set(newx + WorldClimbAnchorAdjustment.x, transform.position.y, newz + WorldClimbAnchorAdjustment.z);
+                transform.position = new Vector3(newx, transform.position.y, newz);
             }
-            else if (currentAnimationTime > jumpAnimationStartTime)
-            {
-                print("Out of time");
-                characterAnimationState = AnimationStateList.Stationary;
-                GameObject.FindGameObjectWithTag("AnimatedPlayer").animation.Play("Idle");
+        }
+        else
+        {
+            characterAnimationState = AnimationStateList.Stationary;
+            GameObject.FindGameObjectWithTag("AnimatedPlayer").animation.Play("Idle");
 
-                Vector3 WorldPostClimbAnchorAdjustment = transform.TransformDirection(postClimbAdjustment.position.x,
-                     postClimbAdjustment.position.y,
-                     postClimbAdjustment.position.z);
-            }
+            Vector3 WorldPostClimbAnchorAdjustment = transform.TransformDirection(postClimbAdjustment.position.x,
+                    postClimbAdjustment.position.y,
+                    postClimbAdjustment.position.z);
+
+            transform.position = new Vector3(WorldPostClimbAnchorAdjustment.x, WorldPostClimbAnchorAdjustment.y, WorldPostClimbAnchorAdjustment.z);
         }
     }
 
