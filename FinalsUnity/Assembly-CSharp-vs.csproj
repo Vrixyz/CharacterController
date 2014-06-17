@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+	<ProductVersion>10.0.20506</ProductVersion>
+	<SchemaVersion>2.0</SchemaVersion>
+	<ProjectGuid>{CB1B5B80-A614-7B41-1470-2D42F6C868EB}</ProjectGuid>
+	<OutputType>Library</OutputType>
+	<AppDesignerFolder>Properties</AppDesignerFolder>
+	<RootNamespace></RootNamespace>
+	<AssemblyName>Assembly-CSharp</AssemblyName>
+	<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+	<FileAlignment>512</FileAlignment>
+	<BaseDirectory>Assets</BaseDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+	<DebugSymbols>true</DebugSymbols>
+	<DebugType>full</DebugType>
+	<Optimize>false</Optimize>
+	<OutputPath>Temp\bin\Debug\</OutputPath>
+	<DefineConstants>DEBUG;TRACE;UNITY_STANDALONE_WIN;ENABLE_MICROPHONE;ENABLE_TEXTUREID_MAP;ENABLE_AUDIO_FMOD;UNITY_STANDALONE;ENABLE_MONO;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_GENERICS;ENABLE_SUBSTANCE;INCLUDE_WP8SUPPORT;ENABLE_MOVIES;ENABLE_WWW;ENABLE_IMAGEEFFECTS;ENABLE_WEBCAM;INCLUDE_METROSUPPORT;RENDER_SOFTWARE_CURSOR;ENABLE_NETWORK;ENABLE_PHYSICS;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_2D_PHYSICS;ENABLE_SHADOWS;ENABLE_AUDIO;ENABLE_NAVMESH_CARVING;ENABLE_DUCK_TYPING;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;UNITY_4_3_4;UNITY_4_3;ENABLE_PROFILER;UNITY_EDITOR;UNITY_EDITOR_WIN</DefineConstants>
+	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
+	<NoWarn>0169</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+	<DebugType>pdbonly</DebugType>
+	<Optimize>true</Optimize>
+	<OutputPath>Temp\bin\Release\</OutputPath>
+	<DefineConstants>TRACE</DefineConstants>
+	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
+	<NoWarn>0169</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+	<Reference Include="System" />
+    <Reference Include="System.XML" />
+	<Reference Include="System.Core" />
+	<Reference Include="System.Xml.Linq" />
+	<Reference Include="UnityEngine">
+	  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
+	</Reference>
+	<Reference Include="UnityEditor">
+	  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
+	</Reference>
+  </ItemGroup>
+  <ItemGroup>
+     <Compile Include="Assets\Scripts\ActivateSound.cs" />
+     <Compile Include="Assets\Scripts\Animation_Manager.cs" />
+     <Compile Include="Assets\Scripts\Camera_Manager.cs" />
+     <Compile Include="Assets\Scripts\Character_Manager.cs" />
+     <Compile Include="Assets\Scripts\Character_Motor.cs" />
+     <Compile Include="Assets\Scripts\ColorGame.cs" />
+     <Compile Include="Assets\Scripts\DeadZoneSetter.cs" />
+     <Compile Include="Assets\Scripts\Death_Permanent.cs" />
+     <Compile Include="Assets\Scripts\DestroyGameobject.cs" />
+     <Compile Include="Assets\Scripts\EndGame.cs" />
+     <Compile Include="Assets\Scripts\FireBallLauncher.cs" />
+     <Compile Include="Assets\Scripts\FootPrint.cs" />
+     <Compile Include="Assets\Scripts\Force.cs" />
+     <Compile Include="Assets\Scripts\GUI\AGUIButton.cs" />
+     <Compile Include="Assets\Scripts\GUI\ActivateGUI.cs" />
+     <Compile Include="Assets\Scripts\GUI\ControlsText.cs" />
+     <Compile Include="Assets\Scripts\GUI\QuitGame.cs" />
+     <Compile Include="Assets\Scripts\GUI\Restart.cs" />
+     <Compile Include="Assets\Scripts\GUI\ShowControls.cs" />
+     <Compile Include="Assets\Scripts\GUI\StartGame.cs" />
+     <Compile Include="Assets\Scripts\GUI\StoryText.cs" />
+     <Compile Include="Assets\Scripts\Helper.cs" />
+     <Compile Include="Assets\Scripts\KillFireBalls.cs" />
+     <Compile Include="Assets\Scripts\KillsStuff.cs" />
+     <Compile Include="Assets\Scripts\MountainGoBack.cs" />
+     <Compile Include="Assets\Scripts\MusicPlayer.cs" />
+     <Compile Include="Assets\Scripts\Pattern_1.cs" />
+     <Compile Include="Assets\Scripts\PickUp.cs" />
+     <Compile Include="Assets\Scripts\Puzzle Cube\Character_Collision_Manager.cs" />
+     <Compile Include="Assets\Scripts\Puzzle Cube\HeatWave.cs" />
+     <Compile Include="Assets\Scripts\Puzzle Cube\KillPuzzle.cs" />
+     <Compile Include="Assets\Scripts\Puzzle Cube\PuzzleCubeDestination.cs" />
+     <Compile Include="Assets\Scripts\Puzzle Cube\PuzzleCubeLock.cs" />
+     <Compile Include="Assets\Scripts\Puzzle Cube\PuzzleCubeZone.cs" />
+     <Compile Include="Assets\Scripts\Puzzle Cube\ResetPuzzle.cs" />
+     <Compile Include="Assets\Scripts\RespawnsAt.cs" />
+     <Compile Include="Assets\Scripts\RotateEarth.cs" />
+     <Compile Include="Assets\Scripts\SetHeart.cs" />
+     <Compile Include="Assets\Scripts\StartAnimation.cs" />
+     <Compile Include="Assets\Scripts\activateAfter.cs" />
+     <Compile Include="Assets\Scripts\rockSpawner.cs" />
+     <Compile Include="Assets\TerrainToolkit\TerrainToolkit.cs" />
+     <None Include="Assets\Standard Assets\Particles\Sources\Shaders\Particle Alpha Blend (Queue +100).shader" />
+ <Reference Include="Assembly-UnityScript-firstpass">
+ <HintPath>Library\ScriptAssemblies\Assembly-UnityScript-firstpass.dll</HintPath>
+ </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Assembly-CSharp-firstpass-vs.csproj">
+      <Project>{F149FE80-05B4-3059-3329-47E28B0FA717}</Project>      <Name>Assembly-CSharp-firstpass-vs</Name>    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+	   Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  
+</Project>

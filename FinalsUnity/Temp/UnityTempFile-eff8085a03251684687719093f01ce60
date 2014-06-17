@@ -1,0 +1,84 @@
+-debug
+-target:library
+-nowarn:0169
+-out:Temp/Assembly-CSharp.dll
+-r:"C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEngine.dll"
+-r:Library/ScriptAssemblies/Assembly-CSharp-firstpass.dll
+-r:Library/ScriptAssemblies/Assembly-UnityScript-firstpass.dll
+-r:"C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEditor.dll"
+-define:UNITY_STANDALONE_WIN
+-define:ENABLE_MICROPHONE
+-define:ENABLE_TEXTUREID_MAP
+-define:ENABLE_AUDIO_FMOD
+-define:UNITY_STANDALONE
+-define:ENABLE_MONO
+-define:ENABLE_SPRITES
+-define:ENABLE_TERRAIN
+-define:ENABLE_GENERICS
+-define:ENABLE_SUBSTANCE
+-define:INCLUDE_WP8SUPPORT
+-define:ENABLE_MOVIES
+-define:ENABLE_WWW
+-define:ENABLE_IMAGEEFFECTS
+-define:ENABLE_WEBCAM
+-define:INCLUDE_METROSUPPORT
+-define:RENDER_SOFTWARE_CURSOR
+-define:ENABLE_NETWORK
+-define:ENABLE_PHYSICS
+-define:ENABLE_CACHING
+-define:ENABLE_CLOTH
+-define:ENABLE_2D_PHYSICS
+-define:ENABLE_SHADOWS
+-define:ENABLE_AUDIO
+-define:ENABLE_NAVMESH_CARVING
+-define:ENABLE_DUCK_TYPING
+-define:ENABLE_SINGLE_INSTANCE_BUILD_SETTING
+-define:UNITY_4_3_4
+-define:UNITY_4_3
+-define:ENABLE_PROFILER
+-define:UNITY_EDITOR
+-define:UNITY_EDITOR_WIN
+Assets/Scripts/ActivateSound.cs
+Assets/Scripts/Animation_Manager.cs
+Assets/Scripts/Camera_Manager.cs
+Assets/Scripts/Character_Manager.cs
+Assets/Scripts/Character_Motor.cs
+Assets/Scripts/ColorGame.cs
+Assets/Scripts/DeadZoneSetter.cs
+Assets/Scripts/Death_Permanent.cs
+Assets/Scripts/DestroyGameobject.cs
+Assets/Scripts/EndGame.cs
+Assets/Scripts/FireBallLauncher.cs
+Assets/Scripts/FootPrint.cs
+Assets/Scripts/Force.cs
+Assets/Scripts/GUI/AGUIButton.cs
+Assets/Scripts/GUI/ActivateGUI.cs
+Assets/Scripts/GUI/ControlsText.cs
+Assets/Scripts/GUI/QuitGame.cs
+Assets/Scripts/GUI/Restart.cs
+Assets/Scripts/GUI/ShowControls.cs
+Assets/Scripts/GUI/StartGame.cs
+Assets/Scripts/GUI/StoryText.cs
+Assets/Scripts/Helper.cs
+Assets/Scripts/KillFireBalls.cs
+Assets/Scripts/KillsStuff.cs
+Assets/Scripts/MountainGoBack.cs
+Assets/Scripts/MusicPlayer.cs
+Assets/Scripts/Pattern_1.cs
+Assets/Scripts/PickUp.cs
+"Assets/Scripts/Puzzle Cube/Character_Collision_Manager.cs"
+"Assets/Scripts/Puzzle Cube/HeatWave.cs"
+"Assets/Scripts/Puzzle Cube/KillPuzzle.cs"
+"Assets/Scripts/Puzzle Cube/PuzzleCubeDestination.cs"
+"Assets/Scripts/Puzzle Cube/PuzzleCubeLock.cs"
+"Assets/Scripts/Puzzle Cube/PuzzleCubeZone.cs"
+"Assets/Scripts/Puzzle Cube/ResetPuzzle.cs"
+Assets/Scripts/RespawnsAt.cs
+Assets/Scripts/RotateEarth.cs
+Assets/Scripts/SetHeart.cs
+Assets/Scripts/StartAnimation.cs
+Assets/Scripts/activateAfter.cs
+Assets/Scripts/rockSpawner.cs
+Assets/TerrainToolkit/TerrainToolkit.cs
+-r:"C:/Program Files (x86)/Unity/Editor/Data/Mono\lib/mono/unity\System.Runtime.Serialization.dll"
+-r:"C:/Program Files (x86)/Unity/Editor/Data/Mono\lib/mono/unity\System.Xml.Linq.dll"
