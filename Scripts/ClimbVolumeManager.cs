@@ -31,7 +31,7 @@ public class ClimbVolumeManager : MonoBehaviour {
 
         if (am != null)
         {
-            am.ClearClimbVolumeTransform();
+            am.ClearClimbVolumeTransform(transform);
         }
     }
 }

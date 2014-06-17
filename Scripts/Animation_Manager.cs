@@ -30,10 +30,13 @@ public class Animation_Manager : MonoBehaviour {
         Character_Manager.Instance.isClimbing = true;
     }
 
-    public void ClearClimbVolumeTransform()
+    public void ClearClimbVolumeTransform(Transform climbTransform)
     {
-        climbVolumeTransform = null;
-        Character_Manager.Instance.isClimbing = false;
+        if (climbVolumeTransform == climbTransform)
+        {
+            climbVolumeTransform = null;
+            Character_Manager.Instance.isClimbing = false;
+        }
     }
 
     public enum MotionStateList
