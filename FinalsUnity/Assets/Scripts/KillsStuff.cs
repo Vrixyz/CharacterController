@@ -16,6 +16,7 @@ public class KillsStuff : MonoBehaviour {
 	void OnTriggerEnter(Collider c)
 	{
 		if (c.gameObject.tag == "Player" ||
+		    c.gameObject.tag == "Rock" ||
 		    c.gameObject.tag == "PuzzleCube")
 		{
 			c.gameObject.SendMessage ("Die");

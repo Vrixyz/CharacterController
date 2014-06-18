@@ -7,7 +7,9 @@ public class FireBallLauncher : MonoBehaviour {
 	public GameObject aim = null;
 	public float _startTime = 2.5f;
 
-    public float _time;
+	public float _time;
+	public bool _fast = false;
+	private float velocity = 500f;
 
 	// Use this for initialization
 	void Start () {
@@ -35,7 +37,16 @@ public class FireBallLauncher : MonoBehaviour {
             go.gameObject.tag = "Rock";
             go.transform.position = new Vector3(origin.transform.position.x,
                 origin.transform.position.y, origin.transform.position.z);
-            go.rigidbody.AddForce(aim.transform.position - go.transform.position);
-        }
-    }
+            //go.rigidbody.AddForce(aim.transform.position - go.transform.position);
+			if (_fast)
+			{
+				go.gameObject.rigidbody.velocity = (aim.gameObject.transform.position - transform.position).normalized * 40.0f;
+				//var magnitude = go.rigidbody.velocity.magnitude;
+				//if (magnitude != velocity)
+				//{
+				//	go.rigidbody.velocity = go.rigidbody.velocity * 5.0f;
+				//}
+    		}
+		}
+	}
 }

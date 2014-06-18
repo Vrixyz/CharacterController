@@ -1,13 +1,14 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\FireBallLauncher.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Pattern_1.cs">
     <Files>
-      <File FileName="Assets\Scripts\RespawnsAt.cs" Line="30" Column="37" />
+      <File FileName="Assets\Scripts\FireBallLauncher.cs" Line="44" Column="1" />
+      <File FileName="Assets\Scripts\KillsStuff.cs" Line="16" Column="21" />
       <File FileName="Assets\Scripts\Puzzle Cube\Character_Collision_Manager.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\KillsStuff.cs" Line="24" Column="66" />
-      <File FileName="Assets\Scripts\KillFireBalls.cs" Line="22" Column="6" />
-      <File FileName="Assets\Scripts\Puzzle Cube\PuzzleCubeLock.cs" Line="28" Column="6" />
-      <File FileName="Assets\Scripts\FireBallLauncher.cs" Line="49" Column="1" />
+      <File FileName="Assets\Scripts\KillFireBalls.cs" Line="18" Column="9" />
+      <File FileName="Assets\Scripts\RespawnsAt.cs" Line="34" Column="14" />
+      <File FileName="Assets\Scripts\DeadZoneSetter.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Pattern_1.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

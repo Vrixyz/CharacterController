@@ -6,7 +6,7 @@ public class StartGame : AGUIButton {
     private Camera_Manager _mainCameraManager = null;
     private bool _pause = true;
     private GameObject _menuCamera;
-    private bool _newGame = true;
+    public bool _newGame = true;
     private Quaternion _originRotation;
 
 	// Use this for initialization
@@ -15,11 +15,17 @@ public class StartGame : AGUIButton {
         _mainCameraManager = Camera.main.GetComponent<Camera_Manager>();
         _menuCamera = GameObject.FindGameObjectWithTag("MenuCamera");
         _originRotation = _menuCamera.transform.localRotation;
-
-        PauseGame();
-        _guiText.text = "Start";
+		if (_newGame)
+		{
+			PauseGame();
+        	_guiText.text = "Start";
+		}
+		else
+		{
+			Trigger();
+		}
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
         if (!_pause && Input.GetKeyDown("escape"))

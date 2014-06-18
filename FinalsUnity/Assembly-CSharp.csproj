@@ -73,6 +73,7 @@
      <Compile Include="Assets\Scripts\MountainGoBack.cs" />
      <Compile Include="Assets\Scripts\MusicPlayer.cs" />
      <Compile Include="Assets\Scripts\Pattern_1.cs" />
+     <Compile Include="Assets\Scripts\Pattern_2.cs" />
      <Compile Include="Assets\Scripts\PickUp.cs" />
      <Compile Include="Assets\Scripts\Puzzle Cube\Character_Collision_Manager.cs" />
      <Compile Include="Assets\Scripts\Puzzle Cube\HeatWave.cs" />

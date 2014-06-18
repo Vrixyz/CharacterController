@@ -15,7 +15,7 @@ public class KillFireBalls : MonoBehaviour {
 
     void OnTriggerEnter(Collider c)
     {
-        //if (c.gameObject.tag == "Rock")
+        if (c.gameObject.tag == "Rock")
         {
             c.gameObject.SendMessage("Die");
         }
